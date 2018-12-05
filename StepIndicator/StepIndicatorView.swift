@@ -2,8 +2,8 @@
 //  StepIndicatorView.swift
 //  StepIndicator
 //
-//  Created by Yun Chen on 2017/7/14.
-//  Copyright © 2017 Yun CHEN. All rights reserved.
+//  Created by DeshPeng on 2018/12/5.
+//  Copyright © 2018 chenyun. All rights reserved.
 //
 
 import UIKit
@@ -60,13 +60,13 @@ public class StepIndicatorView: UIView {
         }
     }
     
-    @IBInspectable public var circleColor:UIColor = defaultColor {
+    @IBInspectable public var circleUnCompleteColor:UIColor = defaultColor {
         didSet {
             self.updateSubLayers()
         }
     }
     
-    @IBInspectable public var circleTintColor:UIColor = defaultTintColor {
+    @IBInspectable public var circleCompleteColor:UIColor = defaultTintColor {
         didSet {
             self.updateSubLayers()
         }
@@ -78,13 +78,13 @@ public class StepIndicatorView: UIView {
         }
     }
     
-    @IBInspectable public var lineColor:UIColor = defaultColor {
+    @IBInspectable public var lineUnCompleteColor:UIColor = defaultColor {
         didSet {
             self.updateSubLayers()
         }
     }
     
-    @IBInspectable public var lineTintColor:UIColor = defaultTintColor {
+    @IBInspectable public var lineCompleteColor:UIColor = defaultTintColor {
         didSet {
             self.updateSubLayers()
         }
@@ -165,21 +165,24 @@ public class StepIndicatorView: UIView {
     }
     
     private func layoutHorizontal() {
+
         let diameter = self.circleRadius * 2
         let stepWidth = self.numberOfSteps == 1 ? 0 : (self.containerLayer.frame.width - self.lineMargin * 2 - diameter) / CGFloat(self.numberOfSteps - 1)
-        let y = self.containerLayer.frame.height / 2.0
+        let ysy = self.containerLayer.frame.height / 2.0
         
         for i in 0..<self.annularLayers.count {
             let annularLayer = self.annularLayers[i]
             let x = self.numberOfSteps == 1 ? self.containerLayer.frame.width / 2.0 - self.circleRadius : self.lineMargin + CGFloat(i) * stepWidth
-            annularLayer.frame = CGRect(x: x, y: y - self.circleRadius, width: diameter, height: diameter)
+            annularLayer.frame = CGRect(x: x, y: ysy - self.circleRadius, width: diameter, height: diameter)
             self.applyAnnularStyle(annularLayer: annularLayer)
             annularLayer.step = i + 1
             annularLayer.updateStatus()
             
             if (i < self.numberOfSteps - 1) {
+                let lineBackgroundHeight : CGFloat = self.lineStrokeWidth
+                let y = self.containerLayer.frame.height / 2.0 - lineBackgroundHeight / 2.0
                 let lineLayer = self.horizontalLineLayers[i]
-                lineLayer.frame = CGRect(x: CGFloat(i) * stepWidth + diameter + self.lineMargin * 2, y: y - 1, width: stepWidth - diameter - self.lineMargin * 2, height: 3)
+                lineLayer.frame = CGRect(x: CGFloat(i) * stepWidth + diameter + self.lineMargin * 2, y: y, width: stepWidth - diameter - self.lineMargin * 2, height: lineBackgroundHeight)
                 self.applyLineStyle(lineLayer: lineLayer)
                 lineLayer.updateStatus()
             }
@@ -189,19 +192,22 @@ public class StepIndicatorView: UIView {
     private func layoutVertical() {
         let diameter = self.circleRadius * 2
         let stepWidth = self.numberOfSteps == 1 ? 0 : (self.containerLayer.frame.height - self.lineMargin * 2 - diameter) / CGFloat(self.numberOfSteps - 1)
-        let x = self.containerLayer.frame.width / 2.0
+        let xsx = self.containerLayer.frame.width / 2.0
         
         for i in 0..<self.annularLayers.count {
             let annularLayer = self.annularLayers[i]
             let y = self.numberOfSteps == 1 ? self.containerLayer.frame.height / 2.0 - self.circleRadius : self.lineMargin + CGFloat(i) * stepWidth
-            annularLayer.frame = CGRect(x: x - self.circleRadius, y: y, width: diameter, height: diameter)
+            annularLayer.frame = CGRect(x: xsx - self.circleRadius, y: y, width: diameter, height: diameter)
             self.applyAnnularStyle(annularLayer: annularLayer)
             annularLayer.step = i + 1
             annularLayer.updateStatus()
             
             if (i < self.numberOfSteps - 1) {
                 let lineLayer = self.horizontalLineLayers[i]
-                lineLayer.frame = CGRect(x: x - 1, y: CGFloat(i) * stepWidth + diameter + self.lineMargin * 2, width: 3 , height: stepWidth - diameter - self.lineMargin * 2)
+                let lineBackgroundWidth : CGFloat = self.lineStrokeWidth
+                let x = self.containerLayer.frame.width / 2.0 - lineBackgroundWidth / 2.0
+                
+                lineLayer.frame = CGRect(x: x, y: CGFloat(i) * stepWidth + diameter + self.lineMargin * 2, width: lineBackgroundWidth , height: stepWidth - diameter - self.lineMargin * 2)
                 lineLayer.isHorizontal = false
                 self.applyLineStyle(lineLayer: lineLayer)
                 lineLayer.updateStatus()
@@ -210,16 +216,19 @@ public class StepIndicatorView: UIView {
     }
     
     private func applyAnnularStyle(annularLayer:AnnularLayer) {
-        annularLayer.annularDefaultColor = self.circleColor
-        annularLayer.tintColor = self.circleTintColor
+        annularLayer.annularDefaultColor = self.circleUnCompleteColor
+        annularLayer.tintColor = self.circleCompleteColor
         annularLayer.lineWidth = self.circleStrokeWidth
         annularLayer.displayNumber = self.displayNumbers
+        annularLayer.lineDashPattern = [5,1]
     }
     
     private func applyLineStyle(lineLayer:LineLayer) {
-        lineLayer.strokeColor = self.lineColor.cgColor
-        lineLayer.tintColor = self.lineTintColor
+        lineLayer.strokeColor = self.lineUnCompleteColor.cgColor
+        lineLayer.tintColor = self.lineCompleteColor
         lineLayer.lineWidth = self.lineStrokeWidth
+        lineLayer.lineDashPhase = 0
+        lineLayer.lineDashPattern = [5,1]
     }
     
     private func applyDirection() {

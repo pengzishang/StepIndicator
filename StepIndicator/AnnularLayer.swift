@@ -131,7 +131,7 @@ class AnnularLayer: CAShapeLayer {
         self.centerCircleLayer.transform = AnnularLayer.originalScale
         self.centerCircleLayer.frame = self.bounds
         self.centerCircleLayer.anchorPoint = CGPoint(x:0.5,y:0.5)
-        self.centerCircleLayer.fillColor = self.tintColor?.cgColor
+        self.centerCircleLayer.fillColor = UIColor.clear.cgColor
         self.addSublayer(self.centerCircleLayer)
         
         self.centerTextLayer.removeFromSuperlayer()
@@ -184,32 +184,17 @@ class AnnularLayer: CAShapeLayer {
     private func drawFullCircleAnimated() {
         let fullCirclePath = UIBezierPath()
         let sideLength = fmin(self.frame.width, self.frame.height)
-        let circlesRadius = sideLength / 2.0
+        let circlesRadius = sideLength / 2.0 - 1
         
         fullCirclePath.addArc(withCenter: CGPoint(x:self.bounds.midX, y:self.bounds.midY), radius: circlesRadius, startAngle: 0.0, endAngle: 2 * CGFloat.pi, clockwise: true)
         
         self.fullCircleLayer.path = fullCirclePath.cgPath
         self.fullCircleLayer.transform = AnnularLayer.originalScale
         self.fullCircleLayer.frame = self.bounds
-        self.fullCircleLayer.fillColor = self.tintColor?.cgColor
+        self.fullCircleLayer.fillColor = UIColor.clear.cgColor
+        self.fullCircleLayer.strokeColor = self.tintColor?.cgColor
+        self.fullCircleLayer.lineWidth = 3
         self.addSublayer(self.fullCircleLayer)
-        
-        let flagLayerWidth = self.fullCircleLayer.bounds.width * 0.8
-        let flagLayerHeight = self.fullCircleLayer.bounds.height * 0.8
-        self.flagLayer.frame = CGRect(x: self.fullCircleLayer.bounds.width * 0.2 / 2.0, y: self.fullCircleLayer.bounds.height * 0.2 / 2.0, width:flagLayerWidth, height:flagLayerHeight)
-        
-        self.animateFullCircle()
-    }
-    
-    private func animateFullCircle() {
-        self.fullCircleLayer.transform = CATransform3DMakeScale(0.8, 0.8, 1.0)
-        self.fullCircleLayer.removeAllAnimations()
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
-            self.fullCircleLayer.transform = AnnularLayer.originalScale
-        }
-        self.fullCircleLayer.add(self.createTransformAnimationWithScale(x: 1.0, y: 1.0), forKey: "FullCircleAnimationScale1.0")
-        CATransaction.commit()
     }
     
 }
