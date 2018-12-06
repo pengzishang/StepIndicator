@@ -88,8 +88,6 @@ class LineLayer: CAShapeLayer {
         self.tintLineLayer.frame = self.bounds
         self.tintLineLayer.strokeColor = self.tintColor?.cgColor
         self.tintLineLayer.lineWidth = self.lineWidth
-        self.tintLineLayer.lineDashPhase = 0
-        self.tintLineLayer.lineDashPattern = [5,1]
         self.tintLineLayer.backgroundColor = UIColor.white.cgColor
         
         self.addSublayer(self.tintLineLayer)
